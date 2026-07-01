@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# Local editor / launch config (machine-specific absolute paths)
+.claude/

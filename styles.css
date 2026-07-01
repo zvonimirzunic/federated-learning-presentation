@@ -1,0 +1,386 @@
+/* ============================================================
+   Diplomski rad, prezentacija
+   Dizajn: bijela podloga, crni detalji. Format 16:9 (1280×720).
+   ============================================================ */
+
+:root {
+  --ink:   #111111;   /* glavni tekst, crni detalji */
+  --muted: #6c6c6c;   /* sekundarni tekst */
+  --faint: #9a9a9a;   /* placeholder / najsvjetlije */
+  --hair:  #dcdcdc;   /* tanke linije */
+  --frame: #ececec;   /* pozadina izvan slajda (vidljiva samo u prozoru) */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--frame);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Pozornica: fiksnih 1280×720, skalira se preko JS-a ---- */
+#stage {
+  width: 1280px;
+  height: 720px;
+  flex: none;              /* da se ne stisne ispod 1280×720 u flex containeru */
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transform-origin: center center;
+  box-shadow: 0 12px 44px rgba(0, 0, 0, .16);
+}
+
+/* ---- Zajedničko za slajdove ---- */
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 70px 90px;
+  display: none;
+  flex-direction: column;
+}
+.slide.active { display: flex; }
+
+.rule { width: 64px; height: 2px; background: var(--ink); }
+
+/* ============================================================
+   NASLOVNICA
+   ============================================================ */
+.title-slide { align-items: center; justify-content: center; text-align: center; }
+
+.title-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1000px;
+}
+.title-logo { width: 200px; height: auto; margin-bottom: 36px; }
+
+.eyebrow {
+  font-size: 15px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.doc-type {
+  font-size: 14px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 22px;
+}
+.thesis-title {
+  font-size: 40px;
+  line-height: 1.22;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin-top: 16px;
+}
+.title-inner .rule { margin: 34px 0; }
+
+.people { display: flex; gap: 96px; }
+.person { display: flex; flex-direction: column; gap: 6px; }
+.role {
+  font-size: 13px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.name { font-size: 20px; font-weight: 500; }
+
+.place-date { margin-top: 46px; font-size: 15px; color: var(--muted); }
+
+/* ============================================================
+   SADRŽAJNI SLAJD (template)
+   ============================================================ */
+.slide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 18px;
+}
+.slide-title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.head-logo { width: 104px; height: auto; flex-shrink: 0; }
+
+.slide-body {
+  flex: 1;
+  min-height: 0;            /* da se slika ispravno smanji unutar flexa */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 0;
+}
+.content-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--hair);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--faint);
+  font-size: 18px;
+}
+
+.slide-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: .03em;
+  padding-top: 14px;
+}
+
+/* ============================================================
+   ZADNJI SLAJD
+   ============================================================ */
+.closing-slide { align-items: center; justify-content: center; text-align: center; }
+.closing-inner { display: flex; flex-direction: column; align-items: center; }
+.closing-logo { width: 172px; height: auto; margin-bottom: 48px; }
+.thanks { font-size: 56px; font-weight: 700; letter-spacing: -.02em; }
+.questions { font-size: 22px; color: var(--muted); margin-top: 14px; }
+.closing-inner .rule { margin-top: 34px; }
+.closing-meta { font-size: 15px; color: var(--muted); margin-top: 30px; }
+
+/* ============================================================
+   RASPOREDI SADRŽAJA
+   ============================================================ */
+.subhead { font-size: 15px; color: var(--muted); margin-top: 14px; }
+.subhead em { font-style: italic; color: var(--ink); }
+
+/* uvod */
+.intro-body { flex-direction: column; align-items: flex-start; justify-content: center; gap: 34px; }
+.lead { font-size: 22px; line-height: 1.5; max-width: 1040px; }
+.q-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 16px;
+  counter-reset: q; font-size: 20px; line-height: 1.45;
+}
+.q-list li { counter-increment: q; position: relative; padding-left: 48px; }
+.q-list li::before {
+  content: counter(q);
+  position: absolute; left: 0; top: -1px;
+  width: 30px; height: 30px;
+  background: var(--ink); color: #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 600;
+}
+
+/* slike */
+.img-row { display: flex; gap: 30px; width: 100%; height: 100%; align-items: stretch; justify-content: center; }
+.img-row figure { flex: 1; min-width: 0; margin: 0; display: flex; flex-direction: column; }
+.img-row figure img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+.hero { margin: 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero img { max-width: 100%; max-height: 100%; object-fit: contain; }
+figcaption { flex: 0 0 auto; margin-top: 12px; text-align: center; font-size: 14px; color: var(--muted); line-height: 1.35; }
+.img-note { text-align: center; font-size: 16px; color: var(--ink); margin-top: 16px; }
+.img-note strong { font-weight: 600; }
+
+/* tablice */
+.table-body { flex-direction: column; align-items: stretch; justify-content: center; padding: 22px 0; }
+.metrics { display: flex; gap: 16px; margin-bottom: 20px; }
+.metric { flex: 1; border: 1px solid var(--hair); border-radius: 8px; padding: 10px 14px; }
+.metric .m-name { display: block; font-weight: 600; font-size: 15px; }
+.metric .m-form { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; font-family: ui-monospace, Menlo, monospace; }
+.results-table { width: 100%; border-collapse: collapse; font-size: 18px; }
+.results-table th, .results-table td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--hair); }
+.results-table thead th { border-bottom: 2px solid var(--ink); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.results-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.results-table tr.best td { background: var(--ink); color: #fff; font-weight: 500; }
+.results-table.compact { font-size: 16px; }
+.results-table.compact th, .results-table.compact td { padding: 8px 12px; }
+.callout { margin-top: 20px; font-size: 15px; line-height: 1.5; }
+.callout strong { font-weight: 600; }
+
+/* split: tablica + slika */
+.split { display: flex; gap: 40px; width: 100%; height: 100%; align-items: center; }
+.split .col-a { flex: 1.15; min-width: 0; }
+.split .col-b { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.split .col-b img { max-width: 100%; max-height: 84%; object-fit: contain; }
+
+/* dva stupca: zaključak */
+.cols2 { display: flex; gap: 64px; width: 100%; align-items: flex-start; }
+.cols2 > div { flex: 1; }
+.col-title { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin: 0 0 18px; }
+.col-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; font-size: 18px; line-height: 1.4; }
+.col-list li { position: relative; padding-left: 20px; }
+.col-list li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; background: var(--ink); border-radius: 50%; }
+.col-list.tight { font-size: 14.5px; gap: 9px; margin-top: 16px; }
+.col-list.tight li { padding-left: 18px; }
+.col-list.tight li::before { top: 8px; }
+
+/* split: tekst lijevo, slika desno (uvod, podaci) */
+.split .lead { font-size: 20px; max-width: none; }
+.split .q-list { font-size: 18px; gap: 13px; margin-top: 22px; }
+.split .col-b figcaption { margin-top: 12px; }
+.split .col-b img { max-height: 88%; }
+
+/* uvod: slika u prvom planu + pitanja u redu ispod */
+.intro2 { flex-direction: column; align-items: stretch; justify-content: center; gap: 18px; }
+.intro-hero { flex: 1; min-height: 0; height: auto; }
+.intro-hero img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.q-list.q-row { flex-direction: row; gap: 26px; font-size: 15px; line-height: 1.35; margin-top: 0; flex: 0 0 auto; }
+.q-list.q-row li { flex: 1; padding-left: 36px; }
+
+/* činjenice o podacima */
+.facts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px; font-size: 19px; line-height: 1.4; }
+.facts li { position: relative; padding-left: 20px; }
+.facts li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; background: var(--ink); border-radius: 50%; }
+.facts b { font-weight: 600; }
+
+/* pregled modela */
+.model-list { display: flex; flex-direction: column; gap: 18px; width: 100%; }
+.model-item { padding: 6px 0 6px 18px; border-left: 3px solid var(--ink); font-size: 20px; line-height: 1.4; }
+.model-item .m-tag { font-weight: 600; }
+.model-item .m-tag::after { content: ': '; font-weight: 400; color: var(--muted); }
+.model-item .m-desc { color: var(--muted); }
+
+/* formule (MathML) */
+math { font-family: "STIX Two Math", "Cambria Math", serif; }
+.fed-body { flex-direction: column; align-items: stretch; justify-content: center; gap: 12px; }
+.fed-diagram { flex: 1; min-height: 0; height: auto; }
+.fed-diagram img { max-height: 100%; }
+.formula-row { display: flex; gap: 18px; flex: 0 0 auto; }
+.formula-card { flex: 1; border: 1px solid var(--hair); border-radius: 10px; padding: 8px 14px; text-align: center; }
+.formula-label { font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
+.formula-card math { font-size: 16px; }
+.metric math { font-size: 14px; margin-top: 6px; }
+
+/* slajd 7: povećan sadržaj */
+.wide-split .results-table { font-size: 18px; }
+.wide-split .results-table th, .wide-split .results-table td { padding: 10px 14px; }
+.wide-split .col-list { font-size: 17px; gap: 12px; margin-top: 18px; }
+.wide-split .col-b img { max-height: 90%; }
+
+/* slajd 8: veće slike (slaganje jedna ispod druge) */
+.img-row.big { flex-direction: column; gap: 12px; }
+.img-row.big figure { width: 100%; flex: 1; min-height: 0; }
+.img-row.big figure img { width: 100%; flex: 1; min-height: 0; object-fit: contain; }
+.img-row.big figcaption { margin-top: 6px; }
+
+/* opisi metrika (uz formule) */
+.metric { text-align: center; }
+.m-info { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* matrica omjera RMSE */
+.results-table.ratio { font-size: 15px; }
+.results-table.ratio th, .results-table.ratio td { padding: 8px 10px; }
+.results-table.ratio th:first-child, .results-table.ratio td:first-child { text-align: left; }
+.results-table.ratio .diag { color: var(--faint); }
+.results-table.ratio .hi { font-weight: 600; }
+
+/* rasprava: jedan slajd, maksimalne slike */
+.rasprava-max { padding: 34px 48px; }
+.img-col-max { display: flex; flex-direction: column; gap: 8px; width: 100%; height: 100%; }
+.img-col-max figure { margin: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.img-col-max figure img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+.img-col-max figcaption { flex: 0 0 auto; margin-top: 4px; font-size: 13px; text-align: center; }
+
+/* ============================================================
+   SUČELJE: brojač + navigacija (fiksno uz rub ekrana)
+   ============================================================ */
+.counter {
+  position: absolute;
+  bottom: 26px;
+  right: 40px;
+  z-index: 10;
+  font-size: 13px;
+  color: var(--ink);
+  letter-spacing: .08em;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+.nav-arrow {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--hair);
+  background: #fff;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .15s ease;
+}
+.nav-arrow:hover { border-color: var(--ink); }
+.nav-prev { left: 22px; }
+.nav-next { right: 22px; }
+
+.ui-hidden { display: none !important; }
+
+/* ============================================================
+   ISPIS / PDF EXPORT
+   Cmd/Ctrl + P → Spremi kao PDF (margine: bez, pozadinska grafika: uključeno)
+   Svaki slajd = jedna stranica, 16:9, bez sučelja.
+   ============================================================ */
+@media print {
+  @page { size: 13.333in 7.5in; margin: 0; }   /* standardni 16:9 slajd */
+
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background: #fff;
+    display: block;
+  }
+
+  /* sučelje i skriveni slajdovi se ne ispisuju */
+  .counter, .nav-arrow, .slide[data-skip] { display: none !important; }
+
+  #stage {
+    width: 1280px;
+    height: auto;
+    transform: none !important;
+    box-shadow: none !important;
+    overflow: visible;
+    background: transparent;
+    margin: 0;
+  }
+
+  /* svi slajdovi vidljivi, svaki na svojoj stranici */
+  .slide {
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    break-before: page;
+    page-break-before: always;
+  }
+  .slide:first-child {
+    break-before: auto;
+    page-break-before: auto;
+  }
+}
+

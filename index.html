@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diplomski rad · Zvonimir Žunić</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="stage">
+
+    <!-- ===================== 0 · NASLOVNICA ===================== -->
+    <section class="slide title-slide active" data-hide-ui>
+      <div class="title-inner">
+        <img class="title-logo" src="assets/FER_logo.jpg" alt="Fakultet elektrotehnike i računarstva">
+        <p class="eyebrow">Sveučilište u Zagrebu · Fakultet elektrotehnike i računarstva</p>
+        <p class="doc-type">Diplomski rad</p>
+        <h1 class="thesis-title">Primjena federiranog učenja za predviđanje opterećenja u mrežama električnih punionica</h1>
+        <div class="rule"></div>
+        <div class="people">
+          <div class="person"><span class="role">Student</span><span class="name">Zvonimir Žunić</span></div>
+          <div class="person"><span class="role">Mentor</span><span class="name">prof. dr. sc. Gordan Ježić</span></div>
+        </div>
+        <p class="place-date">Zagreb, 2. srpnja 2026.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 1 · UVOD ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Uvod i problem</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">Operateri trebaju procjenu opterećenja punionica za sljedeći sat; podaci su raspršeni po stanicama i osjetljivi, pa je centralizacija često neizvediva.</p>
+      <div class="slide-body intro2">
+        <figure class="hero intro-hero">
+          <img src="slike/slajd%201/ChatGPT%20Image%20Jun%2028,%202026,%2006_45_58%20PM.png" alt="Pregled zadatka: naivni, centralizirani i federirani pristup za isti zadatak predviđanja">
+        </figure>
+        <ol class="q-list q-row">
+          <li>Koliko su jake naivne reference?</li>
+          <li>Koliko ih LSTM i rezidualni LSTM nadmašuju?</li>
+          <li>Kako utječu heterogeni podaci na federirano učenje?</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== 2 · PODACI ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Podaci i zadatak</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <div class="split">
+          <div class="col-a">
+            <ul class="facts">
+              <li><b>UrbanEV</b> (Shenzhen, javne punionice; otvoreni skup)</li>
+              <li>cilj: <b>volume</b> (kWh napunjeno po satu)</li>
+              <li><b>40</b> stanica</li>
+              <li>input: <b>20</b> značajki kroz <b>24</b> sata</li>
+              <li>uzorci: <b>174 959</b> ukupno</li>
+              <li>kronološka podjela 70 / 5 / 25, StandardScaler</li>
+            </ul>
+          </div>
+          <div class="col-b">
+            <img src="slike/slajd%202/volume_daily_profile.png" alt="Prosječni dnevni profil opterećenja">
+            <figcaption>Prosječni dnevni profil: izražena dnevna sezonalnost (radni dan ≈ vikend)</figcaption>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 3 · MODELI (PREGLED) — SKRIVEN (data-skip) ===================== -->
+    <section class="slide content-slide" data-skip>
+      <header class="slide-head">
+        <h2 class="slide-title">Modeli</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">Pristupi koje uspoređujemo</p>
+      <div class="slide-body">
+        <div class="model-list">
+          <div class="model-item"><span class="m-tag">Naivni modeli</span><span class="m-desc">zadnja vrijednost i sezonski 24 h; donja referenca bez učenja</span></div>
+          <div class="model-item"><span class="m-tag">Standardni LSTM (centralizirani)</span><span class="m-desc">glavni model treniran nad objedinjenim podacima svih stanica</span></div>
+          <div class="model-item"><span class="m-tag">Rezidualni LSTM</span><span class="m-desc">uči korekciju na sezonsku prognozu od 24 h; ugrađeno domensko znanje, najbolji model</span></div>
+          <div class="model-item"><span class="m-tag">Federirano (FedAvg, FedProx)</span><span class="m-desc">učenje preko više stanica bez dijeljenja sirovih podataka</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 4 · LSTM ĆELIJA — SKRIVEN (data-skip) ===================== -->
+    <section class="slide content-slide" data-skip>
+      <header class="slide-head">
+        <h2 class="slide-title">LSTM ćelija</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <figure class="hero">
+          <img src="slike/slajd%203/1_Mb_L_slY9rjMr8-IADHvwg.png" alt="Shema LSTM ćelije">
+          <figcaption>Zaboravna, ulazna i izlazna vrata kontroliraju tok informacija kroz vrijeme; gating rješava nestajuće gradijente, a eksplodirajuće gasi gradient clipping</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================== 5 · FEDERIRANO ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Federirano učenje</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">Lokalno treniranje, razmjena samo parametara, agregacija, globalni model natrag (kroz runde)</p>
+      <div class="slide-body fed-body">
+        <figure class="hero fed-diagram">
+          <img src="slike/slajd%204/ChatGPT%20Image%20Jun%2028,%202026,%2005_43_08%20PM.png" alt="Shema federiranog učenja s punionicama kao klijentima">
+        </figure>
+        <div class="formula-row">
+          <div class="formula-card">
+            <div class="formula-label">FedAvg: ponderirani prosjek parametara</div>
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+              <msub><mi>w</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub>
+              <mo>=</mo>
+              <munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover>
+              <mfrac><msub><mi>n</mi><mi>k</mi></msub><mi>n</mi></mfrac>
+              <msubsup><mi>w</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msubsup>
+            </math>
+          </div>
+          <div class="formula-card">
+            <div class="formula-label">FedProx: proksimalni član drži lokalni blizu globalnog</div>
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+              <munder><mtext>min</mtext><mi>w</mi></munder>
+              <msub><mi>F</mi><mi>k</mi></msub><mo>(</mo><mi>w</mi><mo>)</mo>
+              <mo>+</mo>
+              <mfrac><mi>μ</mi><mn>2</mn></mfrac>
+              <msup><mrow><mo>‖</mo><mi>w</mi><mo>−</mo><msub><mi>w</mi><mi>t</mi></msub><mo>‖</mo></mrow><mn>2</mn></msup>
+            </math>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 6 · REZULTATI (TABLICA) ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Rezultati</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body table-body">
+        <div class="metrics">
+          <div class="metric">
+            <span class="m-name">RMSE</span>
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+              <msqrt><mrow><mfrac><mn>1</mn><mi>n</mi></mfrac>
+              <munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>
+              <msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>)</mo></mrow><mn>2</mn></msup></mrow></msqrt>
+            </math>
+            <span class="m-info">kažnjava velike greške · kWh</span>
+          </div>
+          <div class="metric">
+            <span class="m-name">MAE</span>
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+              <mfrac><mn>1</mn><mi>n</mi></mfrac>
+              <munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>
+              <mrow><mo>|</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>|</mo></mrow>
+            </math>
+            <span class="m-info">prosječna apsolutna greška · kWh</span>
+          </div>
+          <div class="metric">
+            <span class="m-name">R²</span>
+            <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+              <mn>1</mn><mo>−</mo>
+              <mfrac>
+                <mrow><mo>∑</mo><msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo>)</mo></mrow><mn>2</mn></msup></mrow>
+                <mrow><mo>∑</mo><msup><mrow><mo>(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><mi>y</mi><mo>‾</mo></mover><mo>)</mo></mrow><mn>2</mn></msup></mrow>
+              </mfrac>
+            </math>
+            <span class="m-info">udio objašnjene varijance</span>
+          </div>
+        </div>
+        <table class="results-table">
+          <thead>
+            <tr><th>Pristup</th><th>Scenarij</th><th class="num">RMSE [kWh]</th><th class="num">MAE [kWh]</th><th class="num">R²</th><th class="num">× vs najbolji</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Naivni: zadnja vrijednost</td><td>centralizirano</td><td class="num">337.21</td><td class="num">85.32</td><td class="num">0.878</td><td class="num">1.51×</td></tr>
+            <tr><td>Naivni: sezonski 24 h</td><td>centralizirano</td><td class="num">275.57</td><td class="num">95.60</td><td class="num">0.919</td><td class="num">1.23×</td></tr>
+            <tr><td>Standardni LSTM</td><td>centralizirano</td><td class="num">275.81</td><td class="num">86.24</td><td class="num">0.923</td><td class="num">1.23×</td></tr>
+            <tr class="best"><td>Rezidualni LSTM</td><td>centralizirano</td><td class="num">223.56</td><td class="num">79.76</td><td class="num">0.947</td><td class="num">1.00×</td></tr>
+            <tr><td>FedProx</td><td>federirano · IID</td><td class="num">652.06</td><td class="num">177.24</td><td class="num">0.567</td><td class="num">2.92×</td></tr>
+            <tr><td>FedProx</td><td>federirano · non-IID</td><td class="num">925.65</td><td class="num">290.86</td><td class="num">0.132</td><td class="num">4.14×</td></tr>
+          </tbody>
+        </table>
+        <p class="callout"><strong>× vs najbolji</strong> = koliko je puta RMSE veći od najboljeg modela (rezidualni LSTM = 1.00×). Najbolji federirani je 2.92× lošiji, non-IID čak 4.14×.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 7 · FEDERIRANO REZULTATI ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Federirano učenje: rezultati</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <div class="split wide-split">
+          <div class="col-a">
+            <table class="results-table">
+              <thead>
+                <tr><th>Algoritam</th><th>Scenarij</th><th class="num">RMSE</th><th class="num">R²</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>FedAvg</td><td>IID</td><td class="num">657.00</td><td class="num">0.561</td></tr>
+                <tr><td>FedProx</td><td>IID</td><td class="num">652.06</td><td class="num">0.567</td></tr>
+                <tr><td>FedAvg</td><td>non-IID</td><td class="num">925.69</td><td class="num">0.132</td></tr>
+                <tr><td>FedProx</td><td>non-IID</td><td class="num">925.65</td><td class="num">0.132</td></tr>
+              </tbody>
+            </table>
+            <ul class="col-list">
+              <li>non-IID: <strong>42 % viši RMSE</strong> od IID; R² 0.567 → 0.132</li>
+              <li>FedProx ≈ FedAvg; μ jedva pomaže</li>
+              <li>Dijagnostika: 1 klijent ≈ centralizirani (281)</li>
+            </ul>
+          </div>
+          <div class="col-b">
+            <img src="slike/slajd%206/station_volume_distribution.png" alt="Distribucija opterećenja po stanicama">
+            <figcaption>Neravnomjerna raspodjela po stanicama čini non-IID teškim</figcaption>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RASPRAVA (jedan slajd, maks. slike) ===================== -->
+    <section class="slide content-slide rasprava-max">
+      <header class="slide-head">
+        <h2 class="slide-title">Rasprava</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">Ista metoda daje vrlo različit rezultat ovisno o stanici: federirani model nije jednako dobar svugdje.</p>
+      <div class="slide-body">
+        <div class="img-col-max">
+          <figure>
+            <img src="slike/slajd%207/predikcija_vs_stvarno_srednje_losa_stanica_1023.png" alt="Predikcija vs stvarno, stanica 1023">
+            <figcaption>Stanica 1023: federirani promašuje skokove</figcaption>
+          </figure>
+          <figure>
+            <img src="slike/slajd%207/predikcija_vs_stvarno_usporediva_stanica_1037.png" alt="Predikcija vs stvarno, stanica 1037">
+            <figcaption>Stanica 1037: federirani prati dobro</figcaption>
+          </figure>
+        </div>
+      </div>
+      <p class="img-note">Greška se koncentrira na velikim i atipičnim stanicama; globalni model je kompromis, što upućuje na potrebu za personalizacijom.</p>
+    </section>
+
+    <!-- ===================== 9 · ZAKLJUČAK ===================== -->
+    <section class="slide content-slide">
+      <header class="slide-head">
+        <h2 class="slide-title">Zaključak</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <div class="cols2">
+          <div>
+            <p class="col-title">Zaključak</p>
+            <ul class="col-list">
+              <li>Zadatak je jako sezonski</li>
+              <li>Rezidualni LSTM najbolji: R² 0.947</li>
+              <li>Federirano zaostaje za centraliziranim</li>
+              <li>non-IID heterogenost je glavno ograničenje</li>
+              <li>Točnost: rezidualni LSTM; privatnost: federirano uz dodatne metode</li>
+            </ul>
+          </div>
+          <div>
+            <p class="col-title">Budući rad</p>
+            <ul class="col-list">
+              <li>Federirana varijanta rezidualnog učenja</li>
+              <li>Personalizacija i klasteriranje sličnih stanica</li>
+              <li>Treniranje na više podataka (više gradova i stanica)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ZADNJI · HVALA ===================== -->
+    <section class="slide closing-slide" data-hide-ui>
+      <div class="closing-inner">
+        <img class="closing-logo" src="assets/FER_logo.jpg" alt="FER">
+        <h1 class="thanks">Hvala na pažnji</h1>
+        <div class="rule"></div>
+        <p class="closing-meta">Zvonimir Žunić · Zagreb, 2. srpnja 2026.</p>
+      </div>
+    </section>
+
+    <!-- Sučelje (unutar pozornice, skalira se sa slajdovima, sjedi u margini) -->
+    <div class="counter" id="counter">1 / 9</div>
+    <button id="prev" class="nav-arrow nav-prev" aria-label="Prethodni slajd">‹</button>
+    <button id="next" class="nav-arrow nav-next" aria-label="Sljedeći slajd">›</button>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
