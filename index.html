@@ -288,6 +288,148 @@
       </div>
     </section>
 
+    <!-- ============================================================
+         DODATNI (ŠALABAHTER) SLAJDOVI — nakon "Hvala"
+         Prazan slajd + backup slajdovi za pitanja komisije.
+         Označeni s data-backup: dostupni strelicama, ne broje se u "1 / 9".
+         ============================================================ -->
+
+    <!-- prazan slajd (buffer nakon zahvale) -->
+    <section class="slide" data-backup data-hide-ui></section>
+
+    <!-- Dodatak · Značajke po kategorijama -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · Značajke po kategorijama</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <figure class="hero">
+          <img src="slike/dodatno/feature_categories_overview.png" alt="Popis 20 značajki po kategorijama">
+          <figcaption>20 značajki: stanje stanice (6) · cijena i trajanje (3) · povijesno opterećenje (1) · izvedena zauzetost (3) · vremenske (7)</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Dodatak · Korelacija značajki -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · Korelacija značajki</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <figure class="hero">
+          <img src="slike/dodatno/feature_correlation_matrix.png" alt="Matrica korelacija značajki">
+          <figcaption>Pearsonova korelacija: zauzetosti (busy/idle) međusobno jako korelirane; vremenske i ciklične značajke slabo korelirane s ostalima</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Dodatak · LSTM ćelija -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · LSTM ćelija</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body">
+        <div class="split">
+          <div class="col-a">
+            <ul class="facts">
+              <li><b>Ćelijsko stanje cₜ</b> — dugoročna memorija; ažurira se aditivno</li>
+              <li><b>Skriveno stanje hₜ</b> — kratkoročni izlaz: hₜ = oₜ ⊙ tanh(cₜ)</li>
+              <li><b>Vrata:</b> zaboravna f, ulazna i, izlazna o</li>
+              <li>Gating rješava <b>nestajuće</b> gradijente</li>
+              <li>Gradient clipping (1.0) gasi <b>eksplodirajuće</b></li>
+            </ul>
+          </div>
+          <div class="col-b">
+            <img src="slike/slajd%203/1_Mb_L_slY9rjMr8-IADHvwg.png" alt="Shema LSTM ćelije">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dodatak · Arhitektura i parametri modela -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · Arhitektura i parametri</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">1 LSTM sloj · ulaz <b>20</b> značajki × <b>24</b> sata · skriveno stanje <b>h = 128</b> · linearni izlaz 128 → 1</p>
+      <div class="slide-body table-body">
+        <table class="results-table">
+          <thead><tr><th>Komponenta</th><th>Izračun</th><th class="num">Parametara</th></tr></thead>
+          <tbody>
+            <tr><td>Težine ulaz → stanje (W<sub>ih</sub>)</td><td>4 × 128 × 20</td><td class="num">10 240</td></tr>
+            <tr><td>Težine stanje → stanje (W<sub>hh</sub>)</td><td>4 × 128 × 128</td><td class="num">65 536</td></tr>
+            <tr><td>Pristranosti (b<sub>ih</sub> + b<sub>hh</sub>)</td><td>2 × (4 × 128)</td><td class="num">1 024</td></tr>
+            <tr><td>LSTM sloj — međuzbroj</td><td>—</td><td class="num">76 800</td></tr>
+            <tr><td>Linearni izlaz</td><td>128 × 1 + 1</td><td class="num">129</td></tr>
+            <tr class="best"><td>Ukupno</td><td>—</td><td class="num">76 929</td></tr>
+          </tbody>
+        </table>
+        <p class="callout"><strong>Opća formula:</strong> 4 · (h · (ulaz + h) + 2h) + (h + 1), uz ulaz = 20, h = 128. Faktor <b>4</b> = četvora vrata; broj parametara <b>ne ovisi o duljini prozora</b> (24).</p>
+      </div>
+    </section>
+
+    <!-- Dodatak · Hiperparametri -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · Hiperparametri</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <div class="slide-body table-body">
+        <table class="results-table dense">
+          <thead><tr><th>Hiperparametar</th><th>Vrijednost</th><th>Zašto</th></tr></thead>
+          <tbody>
+            <tr><td>Ulazni prozor</td><td>24 sata</td><td>pun dnevni kontekst (sezonalnost)</td></tr>
+            <tr><td>Horizont predviđanja</td><td>1 sat</td><td>operativno koristan, kratkoročan</td></tr>
+            <tr><td>Broj značajki</td><td>20</td><td>stanje, cijene, zauzetost, vremenske</td></tr>
+            <tr><td>Skriveno stanje (h)</td><td>128</td><td>kapacitet / broj LSTM jedinica</td></tr>
+            <tr><td>Broj LSTM slojeva</td><td>1</td><td>dovoljno za dnevni obrazac</td></tr>
+            <tr><td>Dropout</td><td>0.0</td><td>bez — nije bilo znaka prenaučenosti</td></tr>
+            <tr><td>Veličina mini-batcha</td><td>256</td><td>stabilan i brz gradijent</td></tr>
+            <tr><td>Optimizator</td><td>Adam</td><td>prilagodljiva stopa učenja</td></tr>
+            <tr><td>Stopa učenja</td><td>0.001</td><td>standardna vrijednost za Adam</td></tr>
+            <tr><td>Weight decay</td><td>0.0</td><td>bez L2 regularizacije</td></tr>
+            <tr><td>Funkcija gubitka</td><td>MSE</td><td>kažnjava velike greške (regresija)</td></tr>
+            <tr><td>Ograničenje norme gradijenta</td><td>1.0</td><td>gasi eksplodirajuće gradijente</td></tr>
+            <tr><td>Epohe</td><td>100</td><td>do konvergencije; najbolja po val. RMSE</td></tr>
+            <tr><td>Early stopping</td><td>10 epoha</td><td>tolerancija bez poboljšanja</td></tr>
+            <tr><td>Sjeme slučajnosti</td><td>42</td><td>ponovljivost eksperimenta</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Dodatak · Komunikacijski trošak -->
+    <section class="slide content-slide" data-backup>
+      <header class="slide-head">
+        <h2 class="slide-title">Dodatak · Komunikacijski trošak</h2>
+        <img class="head-logo" src="assets/FER_logo.jpg" alt="FER">
+      </header>
+      <p class="subhead">Federirano · 40 klijenata · 100 rundi · razmjenjuju se samo parametri modela</p>
+      <div class="slide-body table-body">
+        <div class="metrics">
+          <div class="metric big"><span class="m-name">≈ 0.293 MB</span><span class="m-info">veličina modela (76 929 × 4 B)</span></div>
+          <div class="metric big"><span class="m-name">≈ 23.48 MB</span><span class="m-info">po rundi (40 klijenata × preuzmi + pošalji)</span></div>
+          <div class="metric big"><span class="m-name">≈ 2347.69 MB</span><span class="m-info">ukupno · 100 rundi (~2.3 GB)</span></div>
+        </div>
+        <div class="formula-row">
+          <div class="formula-card">
+            <div class="formula-label">Formula</div>
+            <div class="cost-eq">ukupno ≈ runde × klijenti × 2 × (parametri × 4 B)</div>
+          </div>
+        </div>
+        <ul class="col-list tight">
+          <li><b>Ne ovisi o količini podataka</b> — šalju se samo parametri (prednost federiranog)</li>
+          <li><b>Ne ovisi o broju lokalnih epoha</b> — one dižu računalni, ne komunikacijski trošak</li>
+          <li>Raste s <b>veličinom modela, brojem klijenata i rundi</b></li>
+          <li>Naivni i centralizirani modeli nemaju trošak razmjene parametara</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Sučelje (unutar pozornice, skalira se sa slajdovima, sjedi u margini) -->
     <div class="counter" id="counter">1 / 9</div>
     <button id="prev" class="nav-arrow nav-prev" aria-label="Prethodni slajd">‹</button>

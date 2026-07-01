@@ -8,6 +8,8 @@
 (function () {
   const stage   = document.getElementById('stage');
   const slides  = Array.from(document.querySelectorAll('.slide:not([data-skip])'));
+  // Glavni slajdovi (bez data-backup) broje se u "X / N"; dodatni (šalabahter) su izvan brojanja.
+  const mainSlides = slides.filter(s => !s.hasAttribute('data-backup'));
   const counter = document.getElementById('counter');
 
   let i = slides.findIndex(s => s.classList.contains('active'));
@@ -15,9 +17,14 @@
 
   function render() {
     slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
-    counter.textContent = (i + 1) + ' / ' + slides.length;
-    // Brojač se skriva na slajdovima označenima s data-hide-ui (naslovnica, zadnji)
-    counter.classList.toggle('ui-hidden', slides[i].hasAttribute('data-hide-ui'));
+    const cur = slides[i];
+    if (cur.hasAttribute('data-backup')) {
+      counter.textContent = 'Dodatni slajd';
+    } else {
+      counter.textContent = (mainSlides.indexOf(cur) + 1) + ' / ' + mainSlides.length;
+    }
+    // Brojač se skriva na slajdovima označenima s data-hide-ui (naslovnica, zadnji, prazni)
+    counter.classList.toggle('ui-hidden', cur.hasAttribute('data-hide-ui'));
   }
 
   function go(n)  { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }

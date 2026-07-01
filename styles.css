@@ -384,3 +384,13 @@ math { font-family: "STIX Two Math", "Cambria Math", serif; }
   }
 }
 
+/* ============================================================
+   DODATNI (ŠALABAHTER) SLAJDOVI — backup za pitanja komisije
+   ============================================================ */
+.results-table.dense { font-size: 14px; }
+.results-table.dense th, .results-table.dense td { padding: 5px 12px; }
+.results-table.dense td:nth-child(2) { text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.metric.big .m-name { font-size: 25px; font-weight: 700; }
+.cost-eq { font-size: 16px; font-family: ui-monospace, Menlo, monospace; margin-top: 2px; }
+

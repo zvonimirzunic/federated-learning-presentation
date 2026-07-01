@@ -3,3 +3,6 @@
 
 # Local editor / launch config (machine-specific absolute paths)
 .claude/
+
+# Speaker notes / Q&A — not part of the published site
+pitanja_i_odgovori.html
