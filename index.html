@@ -55,10 +55,10 @@
           <div class="col-a">
             <ul class="facts">
               <li><b>UrbanEV</b> (Shenzhen, javne punionice; otvoreni skup)</li>
-              <li>cilj: <b>volume</b> (kWh napunjeno po satu)</li>
               <li><b>40</b> stanica</li>
-              <li>input: <b>20</b> značajki kroz <b>24</b> sata</li>
               <li>uzorci: <b>174 959</b> ukupno</li>
+              <li>input: <b>20</b> značajki kroz <b>24</b> sata</li>
+              <li>cilj: <b>volume</b> (kWh)</li>
               <li>kronološka podjela 70 / 5 / 25, StandardScaler</li>
             </ul>
           </div>
@@ -259,10 +259,9 @@
           <div>
             <p class="col-title">Zaključak</p>
             <ul class="col-list">
-              <li>Zadatak je jako sezonski</li>
+              <li>Podaci su jako sezonski i heterogenost je glavno ograničenje</li>
               <li>Rezidualni LSTM najbolji: R² 0.947</li>
               <li>Federirano zaostaje za centraliziranim</li>
-              <li>non-IID heterogenost je glavno ograničenje</li>
               <li>Točnost: rezidualni LSTM; privatnost: federirano uz dodatne metode</li>
             </ul>
           </div>
